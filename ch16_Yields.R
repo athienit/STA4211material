@@ -1,6 +1,6 @@
 #Yields of Amoebae
 
-yields=read.table("http://www.stat.ufl.edu/~winner/data/entozamoeba.dat",header=FALSE)
+yields=read.table("https://raw.githubusercontent.com/athienit/STA4211material/main/entozamoeba.txt",header=FALSE)
 colnames(yields)=c("Condition","Yields")
 yields$Condition=factor(yields$Condition)
 
@@ -43,7 +43,7 @@ yaov2=aov(Yields~Condition,data=yields)
 summary(yaov2)
 summary.lm(yaov2)
 
-source("http://www.stat.ufl.edu/~athienit/check.R")
+source("https://raw.githubusercontent.com/athienit/STA4210material/main/check.R")
 check(yaov1,tests=TRUE)
 # Why is Durban Watson not valid?
 ncvTest(lm(Yields~Condition,data=yields))
