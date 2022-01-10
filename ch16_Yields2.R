@@ -1,6 +1,6 @@
 #Yields of Amoebae part 2
 
-yields=read.table("http://www.stat.ufl.edu/~winner/data/entozamoeba.dat",header=FALSE)
+yields=read.table("https://raw.githubusercontent.com/athienit/STA4211material/main/entozamoeba.txt",header=FALSE)
 colnames(yields)=c("Condition","Yields")
 yields$Condition=factor(yields$Condition)
 
