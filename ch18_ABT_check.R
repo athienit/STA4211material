@@ -3,52 +3,66 @@ ABT=ABT[,1:3]
 colnames(ABT)=c("Group","Rep","Y")
 ABT$Group=factor(ABT$Group)
 
-stripchart(Y~Group, data=ABT, method="stack", vertical=TRUE,
-           pch=1, cex=1.5, xlab="Factor", ylab="Y", main="Dotplots by Condition")
-title(sub="pre-analysis plot", adj=0, cex=5/6)
-#mtext("Example")
-points(1:5,tapply(ABT$Y,ABT$Group,mean),col=2,pch=8)
-legend(4,19, c("Observations", " Trt Mean"), col = c(1,2), text.col= "black",
-       lty=c(0,0),pch=c(1,8),bg='gray90')
+### OLD STRIPCHART
+
+#stripchart(Y~Group, data=ABT, method="stack", vertical=TRUE,
+#           pch=1, cex=1.5, xlab="Factor", ylab="Y", main="Dotplots by Condition")
+#title(sub="pre-analysis plot", adj=0, cex=5/6)
+##mtext("Example")
+#points(1:5,tapply(ABT$Y,ABT$Group,mean),col=2,pch=8)
+#legend(4,19, c("Observations", " Trt Mean"), col = c(1,2), text.col= "black",
+#       lty=c(0,0),pch=c(1,8),bg='gray90')
+
+library(ggdist)
+library(ggplot2)
+library(gghalves)
+
+ggplot(ABT, aes(x = Group, y = Y,fill=Group)) + 
+  ggdist::stat_halfeye(
+    adjust = .5, #custom bandwidth
+    width = .6, 
+    .width = 0, 
+    justification = -.3, 
+    point_colour = NA) + 
+  geom_boxplot(
+    width = .25, 
+    outlier.shape = NA
+  ) +
+  geom_point(
+    size = 1.3,
+    alpha = .3,
+    position = position_jitter(
+      seed = 1, width = .1
+    )
+  ) + 
+  coord_cartesian(xlim = c(1.2, NA), clip = "off")+
+  coord_flip()
+
+########## MODEL FIT AND DIAGNOSTICS ##################
 
 mod=aov(Y~Group,data=ABT)
+source("https://raw.githubusercontent.com/athienit/STA4210material/main/check.R")
+check(mod,tests=TRUE)
+plot(mod)
 
-### Check assumptions, everything okay-ish except constant variance
-library(car)
-library(lawstat)
+### Checking outliers
+sdr=rstudent(mod)
+sdr[which(abs(sdr)>=abs(qt(0.05/length(sdr),mod$df.residual)))]
 
-#mod=mod2
-re=rstudent(mod) #standardized residuals
-ylimits=c(-3,3)
-ylimits[1]=ifelse(min(re)<(-3),min(re),-3)
-ylimits[2]=ifelse(max(re)>(3),max(re),3)
+### Observations with x-values with the potential to "pull" the regression line
+hat=hatvalues(mod)
+hat[which(hat>2*5/length(sdr))]
 
-par(mfrow=c(2,2))
+### DFFITS
+dftrt=length(levels(ABT$Group))-1
+dffits(mod)[which(dffits(mod)>2*sqrt(dftrt/length(sdr)))]
 
-# Homogeneity of variance
-plot(re~fitted.values(mod),xlab=expression(hat(y)),ylab="StD res.",main="Homogeneity of var.",ylim=ylimits)
-abline(h=0)
-
-leveneTest(mod)
-ncvTest(lm(Y~Group,data=ABT))
-
-# Independence
-plot(re,type="o",pch=22,xlab="Order",ylab="StD res.",main="Independence",ylim=ylimits)
-abline(h=0)
-
-runs.test(re)
-durbinWatsonTest(mod)
-
-# Normality
-hist(re,main="Studentized Deleted residuals",xlab="StD res.")
-qqnorm(re,datax=TRUE)
-qqline(re,datax=TRUE)
-
-shapiro.test(re)
-
-#Outliers via Cook's Distance
+### Cooks D
 cd=cooks.distance(mod)
-cd[cd>4/35] #guideline D>4/dfe.  Note they are all in group 3
+cd[which(cd>1)] # criterion >1
+cd[which(cd>qf(0.5,dftrt,df.residual(mod)))] # more conservative
+
+###### REMEDIAL ###########
 
 ### WLS
 #tapply(ABT$Y,ABT$Group,var)
@@ -79,6 +93,6 @@ anova(ABTwls2)
 #Nonparametric method
 kruskal.test(Y~Group,data=ABT)
 
-source("http://www.stat.ufl.edu/~athienit/rankTukey.R")
+source("https://raw.githubusercontent.com/athienit/STA4211material/main/rankTukey.R")
 
 rank.Tukey(Y~Group,data=ABT)
