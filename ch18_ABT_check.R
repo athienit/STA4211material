@@ -64,6 +64,10 @@ cd[which(cd>qf(0.5,dftrt,df.residual(mod)))] # more conservative
 
 ###### REMEDIAL ###########
 
+### Perform Welch's ANOVA
+oneway.test(Y ~ Group, data = ABT, var.equal = FALSE)
+# If significant perform all pairwise t-tests using bonferroni adjustment
+
 ### WLS
 #tapply(ABT$Y,ABT$Group,var)
 library(plyr)
@@ -94,5 +98,4 @@ anova(ABTwls2)
 kruskal.test(Y~Group,data=ABT)
 
 source("https://raw.githubusercontent.com/athienit/STA4211material/main/rankTukey.R")
-
 rank.Tukey(Y~Group,data=ABT)
