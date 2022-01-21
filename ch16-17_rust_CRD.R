@@ -20,7 +20,7 @@ legend(3.5,80, c("Observations", " Trt Mean","Grand Mean"), col = c(1,2,3), text
 rust.m=aov(y~brand,data=rust)
 anova(rust.m)
 
-source("http://www.stat.ufl.edu/~athienit/allpairCI.R")
+source("https://raw.githubusercontent.com/athienit/STA4211material/main/allpairCI.R")
 allpairCI(y~brand,data=rust,level=0.95,method="Bonf")
 allpairCI(y~brand,data=rust,level=0.95,method="Scheffe")
 Tu=allpairCI(y~brand,data=rust,level=0.95,method="Tukey");Tu
@@ -41,9 +41,9 @@ summary(rust.lm2)
 
 ### Constructing contrasts 3 ways
 attach(rust)
-c1=c(-0.5,0.5,0.5,-0.5)
-c2=c(1,0,0,-1)
-c3=c(0,1,-1,0)
+c1=c(-0.5,0.5,0.5,-0.5)  # Named vs Generic (BC brand, AD generic)
+c2=c(1,0,0,-1)           # A vs D
+c3=c(0,1,-1,0)           # B vc C
 sizes=tapply(y,brand,length)
 
 sum(c1*c2/sizes)

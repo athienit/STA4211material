@@ -6,13 +6,13 @@ allpairCI=function(formula,fixed=NULL,data,method=c("Bonf","Scheffe","Tukey"),le
   }else{
     pred=fixed
   }
-  treat=m1$model[,pred]
+  treat=as.factor(m1$model[,pred])
   MSE=anova.table["Residuals","Mean Sq"]
   df=df.residual(m1)
   resp=all.vars(formula)[1]
   
-  t=length(levels(treat))
-  g=t*(t-1)/2
+  r=length(levels(treat)) # number of levels
+  g=r*(r-1)/2  #number of all pairwise comparisons
   lett=combn(levels(treat),2)
   means=tapply(data[,resp],data[,pred],mean)
   d=unname(-combn(means,2,diff)) #minus is to do A-B not B-A
@@ -33,7 +33,7 @@ allpairCI=function(formula,fixed=NULL,data,method=c("Bonf","Scheffe","Tukey"),le
     if(method[1]=="Bonf"){
       ME=qt(1-alpha/(2*g),df)*sqrt(MSE*sum(1/sizes[,i]))
     }else{if(method[1]=="Scheffe"){
-      ME=sqrt((t-1)*qf(1-alpha,t-1,df))*sqrt(MSE*sum(1/sizes[,i]))
+      ME=sqrt((r-1)*qf(1-alpha,r-1,df))*sqrt(MSE*sum(1/sizes[,i]))
     }
     }#close else  
     mat[i,4]=abs(d[i])>=ME
