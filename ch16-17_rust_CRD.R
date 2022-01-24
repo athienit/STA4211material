@@ -20,12 +20,19 @@ legend(3.5,80, c("Observations", " Trt Mean","Grand Mean"), col = c(1,2,3), text
 rust.m=aov(y~brand,data=rust)
 anova(rust.m)
 
+### Obsolete --- Code developed to do all pairwise CI
+
 source("https://raw.githubusercontent.com/athienit/STA4211material/main/allpairCI.R")
 allpairCI(y~brand,data=rust,level=0.95,method="Bonf")
 allpairCI(y~brand,data=rust,level=0.95,method="Scheffe")
 Tu=allpairCI(y~brand,data=rust,level=0.95,method="Tukey");Tu
 plot(Tu,sub="Tukey Honest Significant Differences",las=1)
 
+### All pairwise CI's
+library(DescTools)
+PostHocTest(rust.m,method="bonferroni")
+PostHocTest(rust.m,method="scheffe")
+PostHocTest(rust.m,method="hsd") # Tukey's
 
 # Equivalent regression model
 rust.lm=lm(y~brand, data=rust)
