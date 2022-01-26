@@ -29,6 +29,6 @@ T.kw=12/(n*(n+1))*sum(rsums^2/n_i)-3*(n+1);T.kw
 kruskal.test(value~treat,data=insulin)
 
 ### Rank analogue to Tukey's HSD
-source("http://users.stat.ufl.edu/~athienit/rankTukey.R")
+source("https://raw.githubusercontent.com/athienit/STA4211material/main/rankTukey.R")
 rank.Tukey(formula=value~treat,data=insulin,level=0.95)
 
