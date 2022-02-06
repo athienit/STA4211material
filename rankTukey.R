@@ -1,6 +1,6 @@
 rank.Tukey=function(formula,data=data,level=0.95){
   resp=all.vars(formula)[1]
-  pred=all.vars(formula)[2]
+  pred=as.factor(all.vars(formula)[2])
   ranked_data=data.frame(cbind(rank(data[,resp]),data))
   colnames(ranked_data)[1]=c("ranks")
   rmeans=tapply(ranked_data$ranks,ranked_data[,pred],mean)
