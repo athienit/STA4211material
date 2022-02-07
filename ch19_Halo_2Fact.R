@@ -22,9 +22,8 @@ ddply(halo1,~attract,summarise,mean=mean(score))
 #############
 ### PLOTS ###
 #############
-
 with(halo1,interaction.plot(essay,attract,score))
-with(halo1,nteraction.plot(attract,essay,score))
+with(halo1,interaction.plot(attract,essay,score))
 
 ### Fancier plot ###
 library(ggplot2)
@@ -49,7 +48,6 @@ ggplot(halo1, aes(x = attract, y = score, fill = essay)) +
 #################
 ### Inference ###
 #################
-
 halo.mod1 <- aov(score ~ essay + attract,data=halo1)
 summary(halo.mod1)
 summary.lm(halo.mod1)
