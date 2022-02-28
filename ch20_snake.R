@@ -31,24 +31,27 @@ Data$Day=factor(Data$Day)
 
 library(asbio)
 with(Data,tukey.add.test(Openings,Snake,Day))
-#so no interaction and no snake
+# so no interaction and no snake
+# Oh no, it doesn't estimate D? lets look at the code
+tukey.add.test
 
-mod=aov(Openings~Snake+Day,data=Data) #could remove snake since not significant
+mod=aov(Openings~Snake+Day,data=Data) # Could remove snake since not significant, results don't change much
 anova(mod)
 TukeyHSD(mod,which="Day")
 
 library(dae)
 with(Data,tukey.1df(mod,Data))
 
-#######################################################################
+#############################################
 ### Now to calculate D in 3 ways
+#############################################
 library(plyr)
 meanDay=unname(ddply(Data,~Day,summarise,mean=mean(Openings))[,2])
 meanSnake=unname(ddply(Data,~Snake,summarise,mean=mean(Openings))[,2])
 gmean=mean(Data$Openings) #grandmean
 
 newData=as.matrix(xtabs(Openings~Snake+Day,data=Data))
-# Way 1, formula page 886 book
+### Way 1, formula page 886 book
 tmp=rep(0,6)
 for(i in 1:6){
     tmp[i]=sum((meanDay-gmean)*newData[i,])
@@ -57,7 +60,7 @@ num=sum((meanSnake-gmean)*tmp)
 denom=sum((meanSnake-gmean)^2)*sum((meanDay-gmean)^2)
 D=num/denom
 
-# Way 2, regression through origin
+### Way 2, regression through origin
 Ystar=newData
 Xstar=newData
 for(i in 1:6){
@@ -71,7 +74,7 @@ Xstar=melt(Xstar)[,"value"]
 lm_mod=lm(Ystar~0+Xstar)
 summary(lm_mod)
 
-# Way 3, change the function tukey.add.test
+### Way 3, change the function tukey.add.test
 tukey.add.test2=function (y, A, B) 
 {
   dname <- paste(deparse(substitute(A)), "and", deparse(substitute(B)), 
