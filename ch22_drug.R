@@ -12,7 +12,20 @@ scatterplot(Response~Dose|Product,smooth=FALSE,reg.line=lm,data=ds)
 
 # Notice that a log transformation on Dose may help fit a more linear relationship (try Box Cox)
 summary(powerTransform(ds$Dose))
-ds$ClDose=log(Dose)-mean(log(Dose))
+
+ds$ClDose=log(Dose)-mean(log(Dose)) # center quantitative predictor
+###########################################################################
+######### Probably best to standardize all quantitative variables #########
+###########################################################################
+cor.trans=function(y){
+  n=length(y)
+  1/sqrt(n-1)*(y-mean(y))/sd(y)
+}
+
+ds$ClDose=cor.trans(log(ds$Dose))
+ds$Response=cor.trans(ds$Response)
+###########################################################################
+
 # Full model
 modelfull=lm(Response~ClDose*Product,data=ds)
 summary(modelfull)
