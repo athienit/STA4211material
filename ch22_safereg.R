@@ -1,4 +1,4 @@
-dat=read.csv("http://www.stat.ufl.edu/~athienit/STA6166/safe_reg.csv",header=TRUE)
+dat=read.csv("https://raw.githubusercontent.com/athienit/STA4210material/main/safe_reg.csv",header=TRUE)
 library(car)
 
 dat$cx=dat$x1-mean(dat$x1)
@@ -19,3 +19,8 @@ scatterplot(y~cx|z,xlab="centered x",smooth=FALSE,regLine=TRUE,col=c("black","re
 # To create a CI around gamma_2+gamma_4
 vc=vcov(reg2);round(vc,5)
 sum(reg2$coefficients[c(2,4)])+c(1,-1)*qt(0.025,reg2$df.residual)*sqrt(vc[2,2]+vc[4,4]+2*vc[2,4])
+
+cor.trans=function(y){
+ n=length(y)
+ 1/sqrt(n-1)*(y-mean(y))/sd(y)
+}
