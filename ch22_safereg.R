@@ -1,7 +1,7 @@
 dat=read.csv("https://raw.githubusercontent.com/athienit/STA4210material/main/safe_reg.csv",header=TRUE)
 library(car)
 
-dat$cx=dat$x1-mean(dat$x1)
+dat$cx=dat$x1-mean(dat$x1) # center data
 colnames(dat)[2]=c("z")
 
 scatterplot(y~cx|z,xlab="centered x",smooth=FALSE,regLine=FALSE,col=c("black","red"),data=dat)
@@ -20,7 +20,20 @@ scatterplot(y~cx|z,xlab="centered x",smooth=FALSE,regLine=TRUE,col=c("black","re
 vc=vcov(reg2);round(vc,5)
 sum(reg2$coefficients[c(2,4)])+c(1,-1)*qt(0.025,reg2$df.residual)*sqrt(vc[2,2]+vc[4,4]+2*vc[2,4])
 
+
+#####################################################
+# Best to standardardize all quantitative variables #
+#####################################################
+# Apply correlation transformation from STA 4210
 cor.trans=function(y){
  n=length(y)
  1/sqrt(n-1)*(y-mean(y))/sd(y)
 }
+
+dat$stand.y=cor.trans(dat$y)
+dat$stand.x=cor.trans(dat$x1)
+
+reg.stand=lm(stand.y~stand.x*z,data=dat)
+summary(reg.stand)
+
+# Proceed like before but using this standardized data
