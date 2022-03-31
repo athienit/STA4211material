@@ -2,7 +2,7 @@
 # Each machine was operated by 6 randomly selected workers.  Each worker had 3 runs
 # on each machine on which they were scored.
 
-Machines=read.table("http://www.stat.ufl.edu/~athienit/STA6167/Machines.txt",header=TRUE)
+Machines=read.table("https://raw.githubusercontent.com/athienit/STA4211material/main/Machines.txt",header=TRUE)
 Machines$Worker=factor(Machines$Worker)
 Machines$Machine=factor(Machines$Machine)
 head(Machines)
