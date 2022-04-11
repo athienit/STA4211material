@@ -4,7 +4,7 @@
 
 # Time Periods (Fixed): Measurements made Pre-treatment 8, 16, 24, and 32 weeks (will only consider post-treatment measures)
 #--------------------------------------------------------------------------------------------------------------------
-rogaine=read.table("http://www.stat.ufl.edu/~athienit/STA6167/hair.txt",header=TRUE)
+rogaine=read.table("https://raw.githubusercontent.com/athienit/STA4211material/main/hair.txt",header=TRUE)
 
 # Make sure we read factors as categorical not continuous
 rogaine1=data.frame(trt=factor(rogaine$trt,labels=c("Placebo","Rogaine")), subj=factor(rogaine$subj),

@@ -2,7 +2,7 @@
 # 3 Swamps sampled from each size type (Random Factor)
 # 27 locations sampled and water levels measured, in cm.
 
-swamp = read.table("C:/Users/demetris/OneDrive - University of Florida/Teaching/STA 4211/Examples/swamp.txt",
+swamp = read.table("https://raw.githubusercontent.com/athienit/STA4211material/main/swamp.txt",
 col.names=c("size", "swampid", "watlev"))
 swamp$size=factor(swamp$size, levels=1:3,labels=c("Small", "Medium", "Large"))
 swamp$swampid=factor(swamp$swampid)
