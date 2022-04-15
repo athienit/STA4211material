@@ -32,6 +32,7 @@ res <- anova_test(data = rogaine1, dv = hair, wid = subj, within = time)
 res
 
 # Time is actually a continuous factor so lets look at the trt*time interaction
+des=factor(c("8","16","24","32"))
 interaction.plot(x.factor=time, trace.factor=trt, response=hair,
                  fun=mean, type="b", legend=T, xlab="Week",ylab="Hair", main="Interaction Plot of Trt*Time",
                  col=1:3,pch=c(1,19),xaxt="n")
@@ -42,7 +43,7 @@ ggplot(data=rogaine1) +
   aes(x = time, color = trt, group = trt, y = hair) +
   stat_summary(fun.y = mean, geom = "point") +
   stat_summary(fun.y = mean, geom = "line")+
-  scale_x_discrete(name="Time (weeks)",labels=c("1"="8", "2"="16", "3"="24", "4"="36"))+
+  scale_x_discrete(name="Time (weeks)",labels=c("1"="8", "2"="16", "3"="24", "4"="32"))+
   labs(y="Hair",color="Treatment")
   
 # work in progress to add error bars, create hm=hair.mean and hsd=hair.sd
