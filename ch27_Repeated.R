@@ -10,21 +10,22 @@ rogaine=read.table("https://raw.githubusercontent.com/athienit/STA4211material/m
 rogaine1=data.frame(trt=factor(rogaine$trt,labels=c("Placebo","Rogaine")), subj=factor(rogaine$subj),
                     time=factor(rogaine$time), hair=rogaine$hair)
 attach(rogaine1)
+
 ### Check conditions
 # Equal variances
 library(car)
 leveneTest(hair,subj)
 
-# Sphericity (old defunct way)
-mat=xtabs(hair~subj+time)
-mod=lm(mat~1)
-mauchly.test(mod,X=~1)
+### Sphericity (old defunct way)
+# mat=xtabs(hair~subj+time)
+# mod=lm(mat~1)
+# mauchly.test(mod,X=~1)
 
-des=factor(c("8","16","24","36"))
-aov=Anova(mod,idata=data.frame(des),idesign=~des,type="III")
-summary(aov)
+# des=factor(c("8","16","24","32"))
+# aov=Anova(mod,idata=data.frame(des),idesign=~des,type="III")
+# summary(aov)
 
-# Sphericity (new way)
+### Sphericity (new way)
 # https://www.datanovia.com/en/lessons/mauchlys-test-of-sphericity-in-r/
 library(rstatix)
 res <- anova_test(data = rogaine1, dv = hair, wid = subj, within = time)

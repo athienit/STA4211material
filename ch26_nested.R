@@ -70,13 +70,13 @@ anv1[1,3]/anv1[2,3]
 #anova(alt2)
 
 ###----------------- Tukey Pairwise Comparisons for Factor A-----------------###
-a=3;b=9;n=27
+a=3;b.=9;n=27
 size.m=with(swamp,tapply(watlev, size, mean))
 d=apply(combn(size.m,2),2,diff) # pairwise differences
 d=as.array(d);dimnames(d)=list(c("Medium-Small","Large-Small","Large-Medium")) # just labeling the names of the dimensions
 for(i in 1:3){
  print(dimnames(d)[[1]][i])
- print(d[i]+c(-1,1)*qtukey(0.95,nmeans=a,df=b-a)*sqrt(anv1[,3][2]/(3*n)))
+ print(d[i]+c(-1,1)*qtukey(0.95,nmeans=a,df=b.-a)*sqrt(a*anv1[,3][2]/(b.*n)))
 }
 
 ###----------------- CI for sigma_beta and sigma-----------------###
