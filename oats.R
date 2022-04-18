@@ -1,6 +1,6 @@
 # Example from http://www.personal.psu.edu/mar36/stat_461/split_plot/split_plot.html
 
-sp.oats=read.csv("http://users.stat.ufl.edu/~athienit/STA6167/oats.csv")
+sp.oats=read.csv("https://raw.githubusercontent.com/athienit/STA4211material/main/oats.csv")
 sp.oats <- within(sp.oats, nitroF <- factor(nitro))
 
 library(lattice)  
