@@ -39,10 +39,10 @@ model_off=aov(Rating~Officer,data=off)
 anv=anova(model_off);anv
 
 # 95% CI on grand mean
-mean(Rating)+c(-1,1)*qt(0.975,4)*sqrt(anv["Officer","Sum Sq"]/(4*5))
+mean(Rating)+c(-1,1)*qt(0.975,4)*sqrt(anv["Officer","Mean Sq"]/(4*5))
 
 # 95% CI on sigma^2
-anv["Residuals","Sum Sq"]/qchisq(c(0.975,0.025),15)
+anv["Residuals","Mean Sq"]/qchisq(c(0.975,0.025),15)
 
 # 95% CI on sigma^2_alpha
 Lhat=1/4*anv["Officer","Mean Sq"]+(-1)*1/4*anv["Residuals","Mean Sq"]
