@@ -9,7 +9,7 @@ head(rust)
 # Dot plot 
 stripchart(y~brand, data=rust, method="stack", vertical=TRUE,
            pch=1, cex=1.5, xlab="Brand", ylab="rust quantity", main="Dotplots by Treatments")
-ytitle(sub="pre-analysis plot", adj=0, cex=5/6)
+title(sub="pre-analysis plot", adj=0, cex=5/6)
 mtext("Rust inhibitor")
 points(c(1,2,3,4),tapply(rust$y,rust$brand,mean),col=2,pch=8)
 abline(h=mean(rust$y),col=3)
@@ -47,11 +47,13 @@ summary(rust.lm2)
 
 
 ### Constructing contrasts 3 ways
-attach(rust)
 c1=c(-0.5,0.5,0.5,-0.5)  # Named vs Generic (BC brand, AD generic)
 c2=c(1,0,0,-1)           # A vs D
 c3=c(0,1,-1,0)           # B vc C
-sizes=tapply(y,brand,length)
+sizes=tapply(rust$y,rust$brand,length)
+# or run this code instead of tapply
+library(plyr)
+sizes=ddply(rust,c("brand"),summarise,sizes=length(y))[,2]
 
 sum(c1*c2/sizes)
 sum(c1*c3/sizes)
@@ -94,7 +96,7 @@ rust.oc=lm(y~Named.vs.Generic+A.vs.D+B.vs.C, data=rust)
 anova(rust.oc)
 summary(rust.oc)
 # Note that the contrasts are orthogonal. The 2nd and 3rd
-# contrasts have squared length of 2 × n, where
+# contrasts have squared length of 2 ? n, where
 # n is the common sample size, 10. Hence, in the output
 # below, the coefficients to these two contrasts give half
 # of their respective estimates. (Hint: think about the
