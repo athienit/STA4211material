@@ -87,15 +87,10 @@ bc2=powerTransform(ABT$Y~ABT$Group)
 summary(bc2)
 ABT$YT=bcPower(ABT$Y,0)
 mod2=aov(ABT$YT~Group,data=ABT)
-# check assumptions again
+# check assumptions again, notice Levene test p-value
+check(mod2,tests=TRUE)
 
 ### Now Box-Cox AND WLS???
 ABTwls2=lm(YT~Group,data=ABT,weights=wts)
 summary(ABTwls2)
 anova(ABTwls2)
-
-#Nonparametric method
-kruskal.test(Y~Group,data=ABT)
-
-source("https://raw.githubusercontent.com/athienit/STA4211material/main/rankTukey.R")
-rank.Tukey(Y~Group,data=ABT)
