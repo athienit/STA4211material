@@ -50,10 +50,10 @@ pairwise_mean_diff <- function(formula, data=NULL,indices){
 #################################
 
 # Perform bootstrap
-bootstrap_results <- boot(data=mydata,statistic=pairwise_mean_diff, sim="ordinary",R = 10,formula=value~group)
+bootstrap_results <- boot(data=mydata,statistic=pairwise_mean_diff, sim="ordinary",R = 1000,formula=value~group)
 # use index=1 for 1st parameter (difference), 2 for 2nd etc
-plot(bootstrap_results, index=2) # plot histogram for slope coefficient
-summary(bootstarp_results$t[,2])
+plot.boot(bootstrap_results,index=3) # plot histogram for difference, do for 1:g
+summary(bootstrap_results$t[,2])
 
 # Get confidence intervals for pairwise mean differences
 boot.ci(boot.out=bootstrap_results, type="all",index=2) # BCa preferred
