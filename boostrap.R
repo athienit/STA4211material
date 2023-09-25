@@ -23,13 +23,16 @@ remove(group1,group2,group3,data,group)
 ########################
 # Define a function to calculate the pairwise mean differences
 pairwise_mean_diff <- function(formula, data=NULL){
+  print(match.call(expand.dots = FALSE))
   # formula is the formula statement, e.g.  formula=value~group
   #1 - Calculate sample group means
   #2 - Take all pairwise differences 
   #3 - Save in list/vector with labels
 }
 
-### Testing internals of function
+pairwise_mean_diff(value~group,data=mydata)
+
+### Testing internals of function from ANOVA.boot{lmboot} and t.test.formula
 
 # set arguments
 formula=as.formula(value~group)
@@ -44,23 +47,30 @@ p <- dim(full.model.frame)[2] - 1
 n <- length(resp)
 if (is.matrix(resp) != TRUE && is.vector(resp) != TRUE) {
   stop("Response must be a vector or matrix.\n")
-}
-else if ((dim(resp)[1] == 0 || dim(resp)[2] == 0) && length(resp) == 
+}  else if ((dim(resp)[1] == 0 || dim(resp)[2] == 0) && length(resp) == 
          0) {
   stop("Response must have entries.\n")
-}
-else if (mode(resp) != "numeric") {
+}  else if (mode(resp) != "numeric") {
   stop("Response must be of type numeric.\n")
-}
-else if (anyNA(resp) == TRUE) {
+}  else if (anyNA(resp) == TRUE) {
   stop("Response must not have any missing values.\n")
 }
-if (p > 2) {
-  warning("This function has only been fully tested for one-way and two-way ANOVA.\n")
-}
-else if (p == 0) {
-  stop("The model must have predictor variables. \n")
-}
+
+m1=aov(formula,data=data)
+anova.table=anova(m1)
+resp=all.vars(formula)[1]
+pred=all.vars(formula)[2]
+
+treat=as.factor(m1$model[,pred])
+r=length(levels(treat)) # number of levels
+g=r*(r-1)/2  #number of all pairwise comparisons
+lett=combn(levels(treat),2)
+means=tapply(data[,resp],data[,pred],mean)
+d=unname(-combn(means,2,diff)) #minus is to do A-B not B-A
+
+
+
+
 
 #################################
 ### ONCE FUNCTION IS COMPLETE ###
