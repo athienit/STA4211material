@@ -22,32 +22,44 @@ remove(group1,group2,group3,data,group)
 ### WORK IN PROGRESS ###
 ########################
 # Define a function to calculate the pairwise mean differences
-pairwise_mean_diff <- function(ff, data){
-  # ff is the formula statement, e.g.  ff=value~group
+pairwise_mean_diff <- function(formula, data=NULL){
+  # formula is the formula statement, e.g.  formula=value~group
   #1 - Calculate sample group means
   #2 - Take all pairwise differences 
   #3 - Save in list/vector with labels
-  }
+}
 
-pairwise_mean_diff(value~group,data)
+### Testing internals of function
 
-  ff=value~group
-  pred=as.formula(paste("~",as.character(all.vars(ff)[2])))
-  pred=noquote(all.vars(ff)[2])
-  resp=noquote(as.character(all.vars(ff)[1]))
-  
-  ddply(data,pred,summarise,mean=mean(ff[[2]]))
- 
-  
-   means=means[,2]
-  d=unname(-combn(means,2,diff)) #minus is to do A-B not B-A
-  lett=combn(levels(treat),2)
-  combn(means$mean, 2,diff)
-  
-  # Clean up output
-  diff_data <- tidy(diff_data)
-  
-  return(diff_data)
+# set arguments
+formula=as.formula(value~group)
+data=mydata
+
+if (inherits(formula, "formula") == FALSE) {
+  stop("The input model must be a formula.\n")
+}
+full.model.frame <- model.frame(formula, data = data, na.action = na.pass)
+resp <- model.response(full.model.frame)
+p <- dim(full.model.frame)[2] - 1
+n <- length(resp)
+if (is.matrix(resp) != TRUE && is.vector(resp) != TRUE) {
+  stop("Response must be a vector or matrix.\n")
+}
+else if ((dim(resp)[1] == 0 || dim(resp)[2] == 0) && length(resp) == 
+         0) {
+  stop("Response must have entries.\n")
+}
+else if (mode(resp) != "numeric") {
+  stop("Response must be of type numeric.\n")
+}
+else if (anyNA(resp) == TRUE) {
+  stop("Response must not have any missing values.\n")
+}
+if (p > 2) {
+  warning("This function has only been fully tested for one-way and two-way ANOVA.\n")
+}
+else if (p == 0) {
+  stop("The model must have predictor variables. \n")
 }
 
 #################################
