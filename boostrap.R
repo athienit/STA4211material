@@ -17,9 +17,7 @@ group <- rep(c("Group1", "Group2", "Group3"), each = 20)
 mydata=data.frame(value=data,group=factor(group))
 remove(group1,group2,group3,data,group)
 
-########################
-### WORK IN PROGRESS ###
-########################
+
 # Define a function to calculate the pairwise mean differences
 pairwise_mean_diff <- function(formula, data=NULL,indices){
   dat=data[indices,] 
@@ -45,24 +43,28 @@ pairwise_mean_diff <- function(formula, data=NULL,indices){
   return(diffs)
 }
 
-#################################
-### ONCE FUNCTION IS COMPLETE ###
-#################################
 
 # Perform bootstrap
 bootstrap_results <- boot(data=mydata,statistic=pairwise_mean_diff, sim="ordinary",R = 1000,formula=value~group)
 # use index=1 for 1st parameter (difference), 2 for 2nd etc
-plot.boot(bootstrap_results,index=3) # plot histogram for difference, do for 1:g
-summary(bootstrap_results$t[,2])
+generate_results <- function(results) {
+  # Create a loop to generate plots
+  num_plots=dim(results$t0)
+  for (i in 1:num_plots) {
+    # Create a new plot
+    plot(results,index=i)
+    title(paste("Plot",i))
+  }
+  # Print the results
+  cat("Bootstrap results:\n")
+  print(bootstrap_results)
+  for (i in 1:num_plots) {
+    cat("\n")
+    print(paste("95% Confidence Intervals for Pairwise Mean Differences:",i))
+    print(boot.ci(boot.out=bootstrap_results, type="all",index=i)) # BCa preferred
+  }
+}
 
 # Get confidence intervals for pairwise mean differences
-boot.ci(boot.out=bootstrap_results, type="all",index=2) # BCa preferred
+generate_results(bootstrap_results) # plot histogram for difference, do for 1:g, scroll through plots
 
-
-
-
-# Print the results
-cat("Bootstrap results:\n")
-print(bootstrap_results)
-
-cat("\n95% Confidence Intervals for Pairwise Mean Differences:\n")
