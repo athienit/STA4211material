@@ -35,8 +35,13 @@ pairwise_mean_diff <- function(formula, data=NULL,indices){
   r=length(levels(treat)) # number of levels
   g=r*(r-1)/2  #number of all pairwise comparisons
   lett=combn(levels(treat),2)
-  means=tapply(data[,resp],data[,pred],mean)
+  means=tapply(dat[,resp],dat[,pred],mean)
   diffs=unname(-combn(means,2,diff)) #minus is to do A-B not B-A
+  rnames=rep(0,g)
+  for(i in 1:g){
+    rnames[i]=paste(lett[1,i],"-",lett[2,i])
+  }
+  setNames(diffs,rnames)
   return(diffs)
 }
 
