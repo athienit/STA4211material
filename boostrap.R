@@ -3,9 +3,9 @@ library(boot)
 
 # Generate example data
 set.seed(123)
-group1 <- rnorm(20, mean = 10, sd = 2)
-group2 <- rnorm(20, mean = 12, sd = 2)
-group3 <- rnorm(20, mean = 11, sd = 2)
+group1 <- rt(30, mean = 10, sd = 1.5)
+group2 <- rt(30, mean = 12, sd = 2.5)
+group3 <- rt(30, mean = 11, sd = 2)
 
 # Combine the groups
 data <- c(group1, group2, group3)
@@ -45,7 +45,7 @@ pairwise_mean_diff <- function(formula, data=NULL,indices){
 # Perform bootstrap
 bootstrap_results <- boot(data=mydata,statistic=pairwise_mean_diff, sim="ordinary",R = 1000,formula=value~group)
 # use index=1 for 1st parameter (difference), 2 for 2nd etc
-generate_results <- function(results,conf.level=0.95,bonf.adj=T) {
+generate_results <- function(results,conf.level=0.90,bonf.adj=T) {
   #Create labels
   m1=aov(formula,data=dat)
   resp=all.vars(formula)[1]
@@ -73,9 +73,10 @@ generate_results <- function(results,conf.level=0.95,bonf.adj=T) {
   print(bootstrap_results)
   for (i in 1:num_plots) {
     cat("\n")
-    print(paste("CI for Pairwise Mean Differences:",rnames[i]))
+    cat(paste("CI for Pairwise Mean Differences:",rnames[i],"\n"))
     print(boot.ci(boot.out=bootstrap_results, type="all",index=i,conf=conf)) # BCa preferred
   }
+  cat(paste("\n Experimentwise confidence level at least",conf.level*100,"%","\n"))
 }
 
 # Get confidence intervals for pairwise mean differences
