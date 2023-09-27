@@ -1,7 +1,11 @@
 # Load necessary libraries
 library(boot)
+library(ggdist)
+library(ggplot2)
+library(gghalves)
+library(plyr)
 
-# Generate example data
+# Generate example data, note not normal and non-constant variance
 set.seed(123)
 group1 <- rt(30, mean = 10, sd = 1.5)
 group2 <- rt(30, mean = 12, sd = 2.5)
@@ -17,6 +21,30 @@ group <- rep(c("Group1", "Group2", "Group3"), each = 20)
 mydata=data.frame(value=data,group=factor(group))
 remove(group1,group2,group3,data,group)
 
+# Plot data
+ggplot(mydata, aes(x = group, y = value,fill=group)) + 
+  ggdist::stat_halfeye(
+    adjust = .5, #custom bandwidth
+    width = .6, 
+    .width = 0, 
+    justification = -.3, 
+    point_colour = NA) + 
+  geom_boxplot(
+    width = .25, 
+    outlier.shape = NA
+  ) +
+  geom_point(
+    size = 1.3,
+    alpha = .3,
+    position = position_jitter(
+      seed = 1, width = .1
+    )
+  ) + 
+  coord_cartesian(xlim = c(1.2, NA), clip = "off")+
+  coord_flip()
+
+# get group means and variances
+ddply(mydata,~group,summarise,mean=mean(value),var=var(value))
 
 # Define a function to calculate the pairwise mean differences
 pairwise_mean_diff <- function(formula, data=NULL,indices){
