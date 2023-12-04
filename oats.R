@@ -1,4 +1,4 @@
-# Example from http://www.personal.psu.edu/mar36/stat_461/split_plot/split_plot.html
+# Yates (1935) as an example of a split-plot design.  These data have been introduced by Yates (1935) as an example of a split-plot design. The treatment structure used in the experiment was a 3$times$4 full factorial, with three varieties of oats and four concentrations of nitrogen. The experimental units were arranged into six blocks, each with three whole-plots subdivided into four subplots. The varieties of oats were assigned randomly to the whole-plots and the concentrations of nitrogen to the subplots. All four concentrations of nitrogen were used on each whole-plot.
 
 sp.oats=read.csv("https://raw.githubusercontent.com/athienit/STA4211material/main/oats.csv")
 sp.oats <- within(sp.oats, nitroF <- factor(nitro))
