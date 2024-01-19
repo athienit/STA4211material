@@ -1,45 +1,4 @@
-rust <- data.frame(y=c(43.9, 39.0, 46.7, 43.8, 44.2, 47.7, 43.6, 38.9, 43.6, 40.0,
-                       89.8, 87.1, 92.7, 90.6, 87.7, 92.4, 86.1, 88.1, 90.8, 89.1,
-                       68.4, 69.3, 68.5, 66.4, 70.0, 68.1, 70.6, 65.2, 63.8, 69.2,
-                       36.2, 45.2, 40.7, 40.5, 39.3, 40.3, 43.2, 38.7, 40.9, 39.7),
-                   brand=rep(LETTERS[1:4],c(10,10,10,10)), replication=rep(1:10,4))
-
-head(rust)
-
-# Dot plot 
-stripchart(y~brand, data=rust, method="stack", vertical=TRUE,
-           pch=1, cex=1.5, xlab="Brand", ylab="rust quantity", main="Dotplots by Treatments")
-title(sub="pre-analysis plot", adj=0, cex=5/6)
-mtext("Rust inhibitor")
-points(c(1,2,3,4),tapply(rust$y,rust$brand,mean),col=2,pch=8)
-abline(h=mean(rust$y),col=3)
-legend(3.5,80, c("Observations", " Trt Mean","Grand Mean"), col = c(1,2,3), text.col= "black",
-       lty=c(0,0,1),pch=c(1,8,NA),bg='gray90')
-
-# ANOVA table
-rust.m=aov(y~brand,data=rust)
-anova(rust.m)
-
-### Obsolete --- Code developed to do all pairwise CI
-
-source("https://raw.githubusercontent.com/athienit/STA4211material/main/allpairCI.R")
-allpairCI(y~brand,data=rust,level=0.95,method="Bonf")
-allpairCI(y~brand,data=rust,level=0.95,method="Scheffe")
-Tu=allpairCI(y~brand,data=rust,level=0.95,method="Tukey");Tu
-plot(Tu,sub="Tukey Honest Significant Differences",las=1)
-
-### All pairwise CI's
-library(DescTools)
-PostHocTest(rust.m,method="bonferroni")
-PostHocTest(rust.m,method="scheffe")
-PostHocTest(rust.m,method="hsd") # Tukey's
-
-# Equivalent regression model
-rust.lm=lm(y~brand, data=rust)
-anova(rust.lm)
-summary(rust.lm)
-
-rust_base_c=transform(rust,brand=relevel(brand,"C"))
+S
 rust.lm2=lm(y~brand, data=rust_base_c)
 summary(rust.lm2)
 #or alternatively
