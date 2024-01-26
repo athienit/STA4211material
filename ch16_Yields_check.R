@@ -4,9 +4,8 @@ yields=read.table("https://raw.githubusercontent.com/athienit/STA4211material/ma
 colnames(yields)=c("Condition","Yields")
 yields$Condition=factor(yields$Condition)
 
-means=tapply(yields$Yields,yields$Condition,mean) # obtain means by trt
-means
-tapply(yields$Yields,yields$Condition,sd) # obtain st.dev. by trt
+library(plyr)
+ddply(yields,.(Condition),summarise,means=mean(Yields),sds=sd(Yields))
 
 #windows(6.5,5.5)
 # Dot plot 
@@ -39,6 +38,15 @@ ggplot(yields, aes(x = Condition, y = Yields,fill=Condition)) +
       seed = 1, width = .1
     )
   ) + 
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    shape = 17,  # Use a triangle as the point shape
+    size = 3,
+    color = "red",  # Set the color to red
+    alpha=0.5, #opacity
+    position = position_dodge(width = 0.75)  # Adjust the dodge width as needed
+  ) +
   coord_cartesian(xlim = c(1.2, NA), clip = "off")
 
 # + coord_flip()
@@ -51,7 +59,10 @@ plot(re,type="o",pch=22,xlab="Order",ylab="studentized res.",main="Time Series")
 abline(h=0)
 
 ### DIAGNOSTICS
+#Built in R option
 plot(yaov1)
+
+#Use custom code
 source("https://raw.githubusercontent.com/athienit/STA4210material/main/check.R")
 check(yaov1,tests=TRUE)
 # Why is Durban Watson not valid?
@@ -73,3 +84,45 @@ dffits(yaov1)[which(dffits(yaov1)>2*sqrt(dftrt/length(sdr)))]
 cd=cooks.distance(yaov1)
 cd[which(cd>1)] # criterion >1
 cd[which(cd>qf(0.5,dftrt,df.residual(yaov1)))] # more conservative
+
+### Some cross-validation
+# Load necessary libraries
+library(dplyr) # For data manipulation
+library(caret) # For cross-validation
+
+# Define the number of folds
+num_folds <- 10
+
+# Create indices for stratified 10-fold cross-validation
+folds <- createDataPartition(yields$Yields, times = num_folds, p=0.2, list = TRUE)
+
+# Initialize a vector to store cross-validation results
+cv_results <- numeric(num_folds)
+
+# Perform 10-fold cross-validation
+for (i in 1:num_folds) {
+  # Split the data into training and validation sets
+  train_data <- yields[-folds[[i]], ]
+  valid_data <- yields[folds[[i]], ]
+  
+  # Fit the model on the training data using aov
+  model <- aov(Yields ~Condition, data = train_data)
+  
+  # Make predictions on the validation set
+  predictions <- predict(model, newdata = valid_data)
+  
+  # Calculate the mean squared error (you may choose a different metric)
+  mse <- mean((valid_data$Yields - predictions)^2)
+  
+  # Store the result
+  cv_results[i] <- mse
+}
+
+# Calculate the mean and standard deviation of the cross-validation results
+mean_mse <- mean(cv_results)
+std_mse <- sd(cv_results)
+
+# Print the results
+cat("Mean MSE:", mean_mse, "\n")
+cat("Standard Deviation of MSE:", std_mse, "\n")
+
