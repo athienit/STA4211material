@@ -6,23 +6,24 @@ library(gghalves)
 library(plyr)
 
 # Generate example data, note not normal and non-constant variance
-set.seed(123)
-group1 <- rt(30, mean = 10, sd = 1.5)
-group2 <- rt(30, mean = 12, sd = 2.5)
-group3 <- rt(30, mean = 11, sd = 2)
+set.seed(812347)
+n=30
+group1 <- rt(n,df=23)*1+10
+group2 <- rt(n,df=23)*2.5+12
+group3 <- rt(n,df=23)*2+11
 
 # Combine the groups
 data <- c(group1, group2, group3)
 
 # Create a grouping variable
-group <- rep(c("Group1", "Group2", "Group3"), each = 20)
+group <- rep(c("Group1", "Group2", "Group3"), each = n)
 
 # Make dataframe and cleanup other variables
 mydata=data.frame(value=data,group=factor(group))
 remove(group1,group2,group3,data,group)
 
 # Plot data
-ggplot(mydata, aes(x = group, y = value,fill=group)) + 
+ggplot(mydata, aes(x = group, y = value, fill=group)) + 
   ggdist::stat_halfeye(
     adjust = .5, #custom bandwidth
     width = .6, 
@@ -73,7 +74,7 @@ pairwise_mean_diff <- function(formula, data=NULL,indices){
 # Perform bootstrap
 bootstrap_results <- boot(data=mydata,statistic=pairwise_mean_diff, sim="ordinary",R = 1000,formula=value~group)
 # use index=1 for 1st parameter (difference), 2 for 2nd etc
-generate_results <- function(results,conf.level=0.90,bonf.adj=T) {
+generate_results <- function(results,formula,dat,conf.level=0.90,bonf.adj=T) {
   #Create labels
   m1=aov(formula,data=dat)
   resp=all.vars(formula)[1]
@@ -108,5 +109,5 @@ generate_results <- function(results,conf.level=0.90,bonf.adj=T) {
 }
 
 # Get confidence intervals for pairwise mean differences
-generate_results(bootstrap_results) # plot histogram for difference, do for 1:g, scroll through plots
+generate_results(bootstrap_results,formula=value~group,dat=mydata) # plot histogram for difference, do for 1:g, scroll through plots
 

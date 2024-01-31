@@ -93,7 +93,8 @@ library(caret) # For cross-validation
 # Define the number of folds
 num_folds <- 10
 
-# Create indices for stratified 10-fold cross-validation
+# Create indices for 10-fold cross-validation
+# Use about 20% of data as validation, p=0.2
 folds <- createDataPartition(yields$Yields, times = num_folds, p=0.2, list = TRUE)
 
 # Initialize a vector to store cross-validation results
@@ -118,11 +119,5 @@ for (i in 1:num_folds) {
   cv_results[i] <- mse
 }
 
-# Calculate the mean and standard deviation of the cross-validation results
-mean_mse <- mean(cv_results)
-std_mse <- sd(cv_results)
-
-# Print the results
-cat("Mean MSE:", mean_mse, "\n")
-cat("Standard Deviation of MSE:", std_mse, "\n")
-
+# Print the results and check for consistency
+print(round(sqrt(cv_results),1))
