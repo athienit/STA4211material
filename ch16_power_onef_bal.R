@@ -1,3 +1,6 @@
+###########################################
+### Following code is ONLY for illutsration
+###########################################
 num.trt <- 4
 num.rep <- 60 #sample size per group
 
@@ -40,7 +43,14 @@ legend(x=5,y=0.6,c("F(nc.0)","F(nc.1)","F(nc.2)","F(nc.3)"),lty=1:4)
 # To find the sample size required for a specific power a lot of trial and error
 # is required where you change num.rep until you get the power you want...OR
 
-# There are some other functions
+###################################
+### IN PRACTICE
+###################################
+# Set alternative using sum to 0 constraint
+tau.1 <- c(-2.5,0,0,2.5) #Example 1, group 1 is 2.5 units below grand mean and group 4 is 2.5 units above grand mean
+
+# Note we did not set alpha (Type I error)
+# so the functions below takes default alpha=0.05.  It can be changed!
 power.anova.test(groups = length(tau.1),
                  between.var = var(tau.1),
                  within.var = 16^2, power = .90)
