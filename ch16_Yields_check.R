@@ -65,8 +65,8 @@ plot(yaov1)
 #Use custom code
 source("https://raw.githubusercontent.com/athienit/STA4210material/main/check.R")
 check(yaov1,tests=TRUE)
-# Why is Durban Watson not valid?
 ncvTest(lm(Yields~Condition,data=yields)) #Breush-Pagan test of non constant variance
+ncvTest(yaov1)
 
 ### Checking outliers
 sdr=rstudent(yaov1)
