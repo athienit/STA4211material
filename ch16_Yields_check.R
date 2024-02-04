@@ -78,7 +78,7 @@ hat[which(hat>2*5/length(sdr))]
 
 ### DFFITS
 dftrt=length(levels(yields$Condition))-1
-dffits(yaov1)[which(dffits(yaov1)>2*sqrt(dftrt/length(sdr)))]
+dffits(yaov1)[which(abs(dffits(yaov1))>2*sqrt(dftrt/length(sdr)))]
 
 ### Cooks D
 cd=cooks.distance(yaov1)
