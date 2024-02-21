@@ -43,7 +43,7 @@ ggplot(halo1, aes(x = attract, y = score, fill = essay)) +
   geom_errorbar(data = sumdat, aes(x = as.numeric(attract)+.1, y = score, group = essay, colour = essay, ymin = score-se, ymax = score+se), width = .05)+
   scale_colour_brewer(palette = "Dark2")+
   scale_fill_brewer(palette = "Dark2")+
-  ggtitle("Aligned and Inreaction Plot")
+  ggtitle("Aligned and Interaction Plot")
 
 #################
 ### Inference ###
