@@ -8,9 +8,8 @@ levels(fformu)=c("cap_f", "cap_nf", "entct_f")
 # We have to assign subj (Subject id) as a factor level or the linear model will treat
 # it as a numeric (continuous) variable and fit a regression
 cap=data.frame(tmax=capdat$tmax, fformu, subj=factor(capdat$subj))
-attach(cap)
-head(cap)
 
+attach(cap)
 xtabs(tmax~subj+fformu)
 #tapply(tmax,fformu,mean) # trt means
 temp=tapply(tmax,subj,rank)
@@ -18,13 +17,16 @@ rtable=matrix(0,11,3,dimnames=list(c(),c("cap_f", "cap_nf", "entct_f")))
 for(i in 1:11){
  rtable[i,]=temp[[i]]
 }
-rtable
+addmargins(rtable,margin=1,FUN=sum)
 
 # Run Friedman's test for the RBD with subject as block and formulation as treatment
 friedman.test(tmax ~ fformu|subj,data=cap)
 # value slightly different from notes due to the way it treats ties in ranks
 
-# Using our own function
+# Using our own function that utilizes material from STA 4502 
+# Hollander, Wolfe, and Chicken - Nonparametric Statistical Methods, Third Edition Ch7
+# that utilizes the permutation method (but on ranks)
+# and calculates pairwise CI slightly different from notes' z-value
 friedman.test2=function(formula,data=data,method=NULL,level=0.95){
   require(NSM3)
   y=all.vars(formula)[1]
@@ -79,8 +81,7 @@ friedman.test2=function(formula,data=data,method=NULL,level=0.95){
   rownames(CI)=rnames
   print(CI)
   
-  return(list(critical.value=cv,friedman.test(formula,data=data)))
+  return(list(critical.value=cv,friedman.test(formula,data=data)$statistic))
 }# function created
 
-friedman.test2(tmax~fformu|subj,mc=TRUE,data=cap,level=0.95)
-
+friedman.test2(tmax~fformu|subj,method="Monte Carlo",data=cap,level=0.95)
