@@ -22,8 +22,16 @@ cor.trans=function(y){
   1/sqrt(n-1)*(y-mean(y))/sd(y)
 }
 
-ds$ClDose=cor.trans(log(ds$Dose))
-ds$Response=cor.trans(ds$Response)
+library(dplyr)
+# Apply the correlation transformation to numeric variables in the data frame
+transform_data <- function(data) {
+  data %>%
+    mutate(across(where(is.numeric), ~cor.trans(.)))
+}
+
+# Example usage:
+# Assuming df is your data frame
+transformed_df <- transform_data(ds)
 ###########################################################################
 
 # Full model
