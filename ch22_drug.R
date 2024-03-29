@@ -29,18 +29,17 @@ transform_data <- function(data) {
     mutate(across(where(is.numeric), ~cor.trans(.)))
 }
 
-# Example usage:
 # Assuming df is your data frame
 transformed_df <- transform_data(ds)
 ###########################################################################
 
 # Full model
-modelfull=lm(Response~ClDose*Product,data=ds)
+modelfull=lm(Response~ClDose*Product,data=transformed_df)
+#modelfull_to=lm(Response~0+ClDose*Product,data=transformed_df) # through origin
 summary(modelfull)
 anova(modelfull)
 
-scatterplot(Response~ClDose|Product,smooth=FALSE,reg.line=lm,data=ds)
-# The log transform really helps reduce s and increases R^2 adj
+scatterplot(Response~ClDose|Product,smooth=FALSE,reg.line=lm,data=transformed_df)
 
 ### Things to note:
 
