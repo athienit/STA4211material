@@ -1,49 +1,98 @@
-#Yields of Amoebae
+# Yields of amoebae: one-way ANOVA, written three equivalent ways.
+# Data: entozamoeba.txt in this repository. 5 conditions, 10 yields per condition.
+# Packages: dplyr, ggplot2
+# Lecture(s): L02
 
-yields=read.table("https://raw.githubusercontent.com/athienit/STA4211material/main/entozamoeba.txt",header=FALSE)
-colnames(yields)=c("Condition","Yields")
-yields$Condition=factor(yields$Condition)
+library(dplyr)
+library(ggplot2)
 
-means=tapply(yields$Yields,yields$Condition,mean) # obtain means by trt
-means
-tapply(yields$Yields,yields$Condition,sd) # obtain st.dev. by trt
+# Read the data ----------------------------------------------------------------
+# Condition is a label, not a number, so it must be stored as a factor.
+yields <- read.table(
+  "https://raw.githubusercontent.com/athienit/STA4211material/main/entozamoeba.txt",
+  col.names = c("Condition", "Yield")
+) |>
+  mutate(Condition = factor(Condition))
 
-#windows(6.5,5.5)
-# Dot plot 
-stripchart(Yields~Condition, data=yields, method="stack", vertical=TRUE,
-           pch=1, cex=1.5, xlab="Factor", ylab="Yields", main="Dotplots by Condition")
-title(sub="pre-analysis plot", adj=0, cex=5/6)
-#mtext("Example")
-points(1:5,tapply(yields$Yields,yields$Condition,mean),col=2,pch=8)
-legend(2,290, c("Observations", " Trt Mean"), col = c(1,2), text.col= "black",
-       lty=c(0,0),pch=c(1,8),bg='gray90')
+# Look at the data before modeling it ------------------------------------------
+yields |>
+  group_by(Condition) |>
+  summarize(n = n(), mean = mean(Yield), sd = sd(Yield)) |>
+  as.data.frame()
 
+ggplot(yields, aes(x = Condition, y = Yield)) +
+  geom_point(
+    shape = 1, size = 2.5,
+    position = position_jitter(width = 0.08, height = 0, seed = 1)
+  ) +
+  stat_summary(fun = mean, geom = "point", shape = 18, size = 5) +
+  labs(
+    title = "Yields by condition",
+    subtitle = "Circles are observations; diamonds are condition means",
+    x = "Condition", y = "Yield"
+  ) +
+  theme_minimal(base_size = 13)
 
-### Useful link: http://www.ats.ucla.edu/stat/r/library/contrast_coding.htm
+# Model 1: cell means, Y = mu_i + error ----------------------------------------
+# The 0 removes the intercept, so each coefficient is one condition's mean.
+# Use this fit for its estimated means. Do not use its overall F test or R-squared:
+# without an intercept, the F test asks whether all the means are 0, which is not
+# the question we care about.
+fit_cell <- lm(Yield ~ 0 + Condition, data = yields)
+coef(fit_cell)
 
-options(contrasts=c('contr.treatment', 'contr.treatment'))
-contrasts(yields$Condition)
+# Model 2: factor effects with a base group, R's default ------------------------
+# The coding matrix shows how each condition is written in terms of indicators.
 contr.treatment(5)
-help(contrasts)
+
+# The intercept is the mean of Condition 1, and each coefficient is that
+# condition's mean minus the Condition 1 mean.
+fit_base1 <- lm(Yield ~ Condition, data = yields)
+anova(fit_base1)
+
+# The F critical value and the p-value can also be found directly.
+qf(0.95, df1 = 4, df2 = 45)
+pf(5.0444, df1 = 4, df2 = 45, lower.tail = FALSE)
+
+summary(fit_base1)
+
+# To match the lecture's tau_3 = 0, choose Condition 3 as the base group. Each t test
+# now compares a condition with Condition 3, and three of the four are new comparisons.
+contr.treatment(5, base = 3)
+fit_base3 <- lm(
+  Yield ~ Condition, data = yields,
+  contrasts = list(Condition = contr.treatment(5, base = 3))
+)
+summary(fit_base3)
+
+# Model 3: factor effects with sum-to-zero coding ------------------------------
+# The intercept is the average of the 5 condition means, and each coefficient is
+# that condition's mean minus this average. R omits the last effect, so we get it
+# from the constraint that the effects sum to 0.
 contr.sum(5)
+fit_sum <- lm(
+  Yield ~ Condition, data = yields,
+  contrasts = list(Condition = contr.sum)
+)
+summary(fit_sum)
+-sum(coef(fit_sum)[-1]) # the effect of Condition 5
 
-yaov1=aov(Yields~Condition,data=yields)
-summary(yaov1)
-summary.lm(yaov1)
+# The models are the same model ------------------------------------------------
+# The coefficients mean different things, but every fit gives the same estimated
+# condition means, and the fits with an intercept report the same F test.
+conditions <- data.frame(Condition = levels(yields$Condition))
+data.frame(
+  Condition = conditions$Condition,
+  cell_means = predict(fit_cell, conditions),
+  base_1 = predict(fit_base1, conditions),
+  base_3 = predict(fit_base3, conditions),
+  sum_zero = predict(fit_sum, conditions)
+)
 
-yields_base3=transform(yields,Condition=relevel(Condition,"3"))
-contrasts(yields_base3$Condition)
-yaov_base3=aov(Yields~Condition,data=yields_base3)
-summary(yaov_base3)
-summary.lm(yaov_base3)
+anova(fit_base3)
+anova(fit_sum)
 
-options(contrasts=c('contr.sum', 'contr.sum'))
-contrasts(yields$Condition)
-yaov2=aov(Yields~Condition,data=yields)
-summary(yaov2)
-summary.lm(yaov2)
+# Checking the model assumptions is the next step: see ch16_Yields_check.R.
 
-source("https://raw.githubusercontent.com/athienit/STA4210material/main/check.R")
-check(yaov1,tests=TRUE)
-# Why is Durban Watson not valid?
-ncvTest(lm(Yields~Condition,data=yields))
+# Learn more about coding systems (run ?contrasts for R's help page):
+# https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/
